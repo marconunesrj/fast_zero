@@ -2,31 +2,32 @@ from http import HTTPStatus
 
 from fastapi.testclient import TestClient
 
-# def test_root_deve_retornar_ok_e_ola_mundo(client: TestClient):
 
-#     response = client.get('/')  # Act
+def test_root_deve_retornar_ok_e_ola_mundo(client: TestClient):
 
-#     assert response.status_code == HTTPStatus.OK  # Assert
-#     assert response.json() == {'message': 'Olá Mundo!'}  # Assert
+    response = client.get('/')  # Act
+
+    assert response.status_code == HTTPStatus.OK  # Assert
+    assert response.json() == {'message': 'Olá Mundo!'}  # Assert
 
 
-# def test_root_deve_retornar_ok_e_ola_mundo_html(client: TestClient):
+def test_root_deve_retornar_ok_e_ola_mundo_html(client: TestClient):
 
-#     response = client.get('/html')  # Act
+    response = client.get('/html')  # Act
 
-#     assert response.status_code == HTTPStatus.OK  # Assert
-#     assert (
-#         response.text
-#         == """
-#     <html>
-#       <head>
-#         <title> Nosso olá mundo!</title>
-#       </head>
-#       <body>
-#         <h1> Olá Mundo </h1>
-#       </body>
-#     </html>"""
-#     )  # Assert
+    assert response.status_code == HTTPStatus.OK  # Assert
+    assert (
+        response.text
+        == """
+    <html>
+      <head>
+        <title> Nosso olá mundo!</title>
+      </head>
+      <body>
+        <h1> Olá Mundo </h1>
+      </body>
+    </html>"""
+    )  # Assert
 
 
 def test_create_user(client: TestClient):
