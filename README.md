@@ -264,3 +264,21 @@ winget install --id SQLite.SQLite
 $ Execução no terminal!
 
 sqlite3 database.db
+
+
+# Para internacionalização instale o Polid
+
+- poetry add polid
+
+Para compliar as Mensagens execute no terminal na ordem abaixo, dentro do ambiente virtual:
+
+- python
+- import polib
+- p = polib.pofile('./fast_zero/locales/pt/LC_MESSAGES/messages.po')
+- p.save_as_mofile('./fast_zero/locales/pt/LC_MESSAGES/messages.mo')
+- quit()
+
+Assim o arquivo messages.mo será gerado ou atualizado.
+
+
+

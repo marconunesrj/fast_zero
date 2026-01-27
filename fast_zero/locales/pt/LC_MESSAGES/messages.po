@@ -1,0 +1,112 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Fast Zero\n"
+"POT-Creation-Date: 2026-01-27 00:00+0000\n"
+"PO-Revision-Date: 2026-01-27 00:00+0000\n"
+"Last-Translator: You <you@example.com>\n"
+"Language-Team: Portuguese\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: fast_zero/app.py:1
+msgid "Fast Zero API"
+msgstr "API Fast Zero"
+
+#: fast_zero/app.py:1
+msgid "API de exemplo para o curso FastAPI"
+msgstr "API de exemplo para o curso FastAPI"
+
+#: fast_zero/app.py:6
+msgid "Olá Mundo!"
+msgstr "Olá Mundo!"
+
+#: fast_zero/app.py:15
+msgid "Nosso olá mundo!"
+msgstr "Nosso olá mundo!"
+
+#: fast_zero/app.py:15
+msgid "Olá Mundo"
+msgstr "Olá Mundo"
+
+#: fast_zero/app.py:38
+msgid "Username already exists"
+msgstr "Nome de usuário já existe"
+
+#: fast_zero/app.py:44
+msgid "Email already exists"
+msgstr "Email já existe"
+
+#: fast_zero/app.py:82
+msgid "User not found"
+msgstr "Usuário não encontrado"
+
+#: fast_zero/app.py:121
+msgid "Username or Email already exists"
+msgstr "Nome de usuário ou Email já existe"
+
+#: fast_zero/app.py:163
+msgid "User deleted"
+msgstr "Usuário removido"
+
+# Route summaries and descriptions
+msgid "Get greeting"
+msgstr "Obter saudação"
+
+msgid "Returns a simple greeting message."
+msgstr "Retorna uma mensagem de saudação simples."
+
+msgid "Get HTML greeting"
+msgstr "Obter saudação em HTML"
+
+msgid "Returns an HTML page with a greeting"
+msgstr "Retorna uma página HTML com uma saudação"
+
+msgid "Create user"
+msgstr "Criar usuário"
+
+msgid "Creates a new user and returns the public user representation."
+msgstr "Cria um novo usuário e retorna sua representação pública."
+
+msgid "List users"
+msgstr "Listar usuários"
+
+msgid "Returns a list of users (paginated)."
+msgstr "Retorna uma lista de usuários (paginada)."
+
+msgid "Number of items to skip"
+msgstr "Número de itens a pular"
+
+msgid "Max number of items to return"
+msgstr "Número máximo de itens a retornar"
+
+msgid "Get user"
+msgstr "Obter usuário"
+
+msgid "Return a single user by ID."
+msgstr "Retorna um único usuário por ID."
+
+msgid "User ID"
+msgstr "ID do usuário"
+
+msgid "Update user"
+msgstr "Atualizar usuário"
+
+msgid "Update a user by ID and return the updated user."
+msgstr "Atualiza um usuário por ID e retorna o usuário atualizado."
+
+msgid "Delete user"
+msgstr "Remover usuário"
+
+msgid "Delete a user by ID and return a confirmation message."
+msgstr "Remove um usuário por ID e retorna uma mensagem de confirmação."
+
+msgid "Conflict"
+msgstr "Conflito"
+
+msgid "Not found"
+msgstr "Não encontrado"
+
+msgid "Successful deletion"
+msgstr "Remoção bem-sucedida"

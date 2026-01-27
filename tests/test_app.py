@@ -2,7 +2,10 @@ from http import HTTPStatus
 
 from fastapi.testclient import TestClient
 
+from fast_zero.i18n import init_gettext
 from fast_zero.schemas import UserPublic
+
+_ = init_gettext()
 
 
 def test_root_deve_retornar_ok_e_ola_mundo(client: TestClient):
@@ -10,7 +13,7 @@ def test_root_deve_retornar_ok_e_ola_mundo(client: TestClient):
     response = client.get('/')  # Act
 
     assert response.status_code == HTTPStatus.OK  # Assert
-    assert response.json() == {'message': 'Olá Mundo!'}  # Assert
+    assert response.json() == {'message': _('Olá Mundo!')}  # Assert
 
 
 def test_root_deve_retornar_ok_e_ola_mundo_html(client: TestClient):
@@ -18,18 +21,17 @@ def test_root_deve_retornar_ok_e_ola_mundo_html(client: TestClient):
     response = client.get('/html')  # Act
 
     assert response.status_code == HTTPStatus.OK  # Assert
-    assert (
-        response.text
-        == """
-    <html>
-      <head>
-        <title> Nosso olá mundo!</title>
-      </head>
-      <body>
-        <h1> Olá Mundo </h1>
-      </body>
-    </html>"""
-    )  # Assert
+    expected_html = """
+        <html>
+            <head>
+                <title> {} </title>
+            </head>
+            <body>
+                <h1> {} </h1>
+            </body>
+        </html>""".format(_('Nosso olá mundo!'), _('Olá Mundo'))
+
+    assert response.text == expected_html
 
 
 def test_create_user(client: TestClient):
@@ -61,7 +63,7 @@ def test_create_user_error_username_exist(client: TestClient, user):
         },
     )
     assert response.status_code == HTTPStatus.CONFLICT
-    assert response.json() == {'detail': 'Username already exists'}
+    assert response.json() == {'detail': _('Username already exists')}
 
 
 def test_create_user_error_email_exist(client: TestClient, user):
@@ -75,7 +77,7 @@ def test_create_user_error_email_exist(client: TestClient, user):
         },
     )
     assert response.status_code == HTTPStatus.CONFLICT
-    assert response.json() == {'detail': 'Email already exists'}
+    assert response.json() == {'detail': _('Email already exists')}
 
 
 # client é uma fixture definida em tests/conftest.py
@@ -106,7 +108,7 @@ def test_read_user(client, user):
 def test_read_user_not_found(client):
     response = client.get('/users/1')
     assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {'detail': 'User not found'}
+    assert response.json() == {'detail': _('User not found')}
 
 
 def test_update_user_error_not_found(client):
@@ -119,7 +121,7 @@ def test_update_user_error_not_found(client):
         },
     )
     assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {'detail': 'User not found'}
+    assert response.json() == {'detail': _('User not found')}
 
 
 # Quando usamos a fixture user, um usuário já é criado no banco de dados
@@ -164,7 +166,7 @@ def test_update_integrity_error(client, user):
 
     assert response_update.status_code == HTTPStatus.CONFLICT
     assert response_update.json() == {
-        'detail': 'Username or Email already exists'
+        'detail': _('Username or Email already exists')
     }
 
 
@@ -174,11 +176,11 @@ def test_delete_user(client, user):
     response = client.delete('/users/1')
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'message': 'User deleted'}
+    assert response.json() == {'message': _('User deleted')}
 
 
 def test_delete_user_error_not_found(client):
     response = client.delete('/users/2')
 
     assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {'detail': 'User not found'}
+    assert response.json() == {'detail': _('User not found')}
