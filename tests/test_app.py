@@ -2,6 +2,8 @@ from http import HTTPStatus
 
 from fastapi.testclient import TestClient
 
+from fast_zero.schemas import UserPublic
+
 
 def test_root_deve_retornar_ok_e_ola_mundo(client: TestClient):
 
@@ -48,18 +50,63 @@ def test_create_user(client: TestClient):
     }
 
 
+def test_create_user_error_username_exist(client: TestClient, user):
+
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'Teste',
+            'email': 'alice@example.com',
+            'password': 'secret',
+        },
+    )
+    assert response.status_code == HTTPStatus.CONFLICT
+    assert response.json() == {'detail': 'Username already exists'}
+
+
+def test_create_user_error_email_exist(client: TestClient, user):
+
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'Aline',
+            'email': 'teste@test.com',
+            'password': 'secret',
+        },
+    )
+    assert response.status_code == HTTPStatus.CONFLICT
+    assert response.json() == {'detail': 'Email already exists'}
+
+
+# client é uma fixture definida em tests/conftest.py
 def test_read_users(client):
-    response = client.get('/users/')
+    response = client.get('/users')
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {
-        'users': [
-            {
-                'username': 'alice',
-                'email': 'alice@example.com',
-                'id': 1,
-            }
-        ]
-    }
+    assert response.json() == {'users': []}
+
+
+# client é uma fixture definida em tests/conftest.py
+# user é uma fixture definida em tests/conftest.py
+def test_read_users_with_users(client, user):
+    user_schema = UserPublic.model_validate(user).model_dump()
+    response = client.get('/users/')
+    assert response.json() == {'users': [user_schema]}
+
+
+# client é uma fixture definida em tests/conftest.py
+# user é uma fixture definida em tests/conftest.py
+def test_read_user(client, user):
+    user_schema = UserPublic.model_validate(user).model_dump()
+    response = client.get(f'/users/{user.id}')
+    assert response.json() == user_schema
+
+
+# client é uma fixture definida em tests/conftest.py
+# user é uma fixture definida em tests/conftest.py
+def test_read_user_not_found(client):
+    response = client.get('/users/1')
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
 
 
 def test_update_user_error_not_found(client):
@@ -75,7 +122,9 @@ def test_update_user_error_not_found(client):
     assert response.json() == {'detail': 'User not found'}
 
 
-def test_update_user(client):
+# Quando usamos a fixture user, um usuário já é criado no banco de dados
+# de teste antes do teste ser executado.
+def test_update_user(client, user):
     response = client.put(
         '/users/1',
         json={
@@ -92,7 +141,36 @@ def test_update_user(client):
     }
 
 
-def test_delete_user(client):
+def test_update_integrity_error(client, user):
+    # Criando um registro para "fausto"
+    client.post(
+        '/users',
+        json={
+            'username': 'fausto',
+            'email': 'fausto@example.com',
+            'password': 'secret',
+        },
+    )
+
+    # Alterando o user.username das fixture para fausto
+    response_update = client.put(
+        f'/users/{user.id}',
+        json={
+            'username': 'fausto',
+            'email': 'bob@example.com',
+            'password': 'mynewpassword',
+        },
+    )
+
+    assert response_update.status_code == HTTPStatus.CONFLICT
+    assert response_update.json() == {
+        'detail': 'Username or Email already exists'
+    }
+
+
+# Quando usamos a fixture user, um usuário já é criado no banco de dados
+# de teste antes do teste ser executado.
+def test_delete_user(client, user):
     response = client.delete('/users/1')
 
     assert response.status_code == HTTPStatus.OK
