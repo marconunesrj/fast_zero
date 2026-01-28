@@ -3,6 +3,7 @@
 - fastapi dev fast_zero/app.py (em modo Developer)
 - fastapi run fast_zero/app.py (em modo de produção)
 - uvicorn fast_zero.app:app
+- uvicorn fast_zero.app:app --workers 3  -> Assim ele inicializa diversas (3) cópias da nossa aplicação (mesmo síncronas) https://fastapidozero.dunossauro.com/4.3/08/
 - task run --host 0.0.0.0
 
 ## pipx
@@ -165,6 +166,12 @@ poetry add --group dev pytest pytest-cov taskipy ruff
 - task format
 - task test
 - task post_test - Mesmo se der erro se executar este comando ele gera o relatório de cobertura
+Para listar todos os testes presentes no nosso projeto, podemos usar a flag --collect-only do pytest:
+
+$ Execução no terminal!
+
+- task test --collect-only
+
 
 Criando o arquivo .gitignore
 
@@ -294,4 +301,41 @@ $ Execução no terminal!
 - poetry add tzdata
 - poetry add "pwdlib[argon2]"
 
+# Configuração para o SQLAlchemy assíncrono
+Embora o SQLAlchemy ofereça suporte à programação assíncrona, esse suporte não vem completo por padrão. Um dos componentes necessários, o pacote greenlet, não é instalado automaticamente, para manter o pacote base mais enxuto. O greenlet é responsável por viabilizar corrotinas cooperativas dentro do SQLAlchemy, permitindo a execução eficiente de código assíncrono.
+
+Para garantir que tudo funcione corretamente em ambientes assíncronos, especialmente em diferentes arquiteturas, é necessário instalar a dependência opcional do asyncio:
+
+$ Execução no terminal!
+
+- poetry add "sqlalchemy[asyncio]"
+
+# SQLite assíncrono
+Além disso, como estamos utilizando o banco de dados SQLite, que não possui suporte nativo a asyncio no Python, precisamos instalar uma extensão chamada aiosqlite. Ela permite a execução assíncrona com bancos SQLite:
+
+$ Execução no terminal!
+
+- poetry add aiosqlite
+
+# Para que nossa conexão esteja ciente que o aiosqlite está sendo usado, devemos alterar a variável de ambiente para contemplar essa alteração:
+
+.env
+
+DATABASE_URL="sqlite+aiosqlite:///database.db"
+
+# Ajustando a sessão de testes
+Embora o SQLAlchemy e o FastAPI lidem de forma nativa com programação assíncrona, o pytest ainda não. Para isso, precisamos instalar uma extensão que adicione esse suporte. A pytest-asyncio fornece um mecanismo de marcação para testes e também um para criação de fixtures assíncronas:
+
+$ Execução no terminal!
+
+- poetry add --group dev pytest-asyncio
+
+# Uma exigência formal do pytest-asyncio é que seja configurado o escopo padrão das fixtures:
+
+pyproject.toml
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = '-p no:warnings'
+asyncio_default_fixture_loop_scope = 'function'
 
