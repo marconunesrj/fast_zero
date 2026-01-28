@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from fast_zero.i18n import init_gettext
 from fast_zero.schemas import UserPublic
+from fast_zero.security import create_access_token
 
 _ = init_gettext()
 
@@ -111,24 +112,40 @@ def test_read_user_not_found(client):
     assert response.json() == {'detail': _('User not found')}
 
 
-def test_update_user_error_not_found(client):
-    response = client.put(
-        '/users/2',
-        json={
-            'username': 'bob',
-            'email': 'bob@example.com',
-            'password': 'mynewpassword',
-        },
-    )
-    assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {'detail': _('User not found')}
+# def test_update_user_error_not_found(client):
+#     response = client.put(
+#         '/users/2',
+#         json={
+#             'username': 'bob',
+#             'email': 'bob@example.com',
+#             'password': 'mynewpassword',
+#         },
+#     )
+#     assert response.status_code == HTTPStatus.NOT_FOUND
+#     assert response.json() == {'detail': _('User not found')}
 
 
 # Quando usamos a fixture user, um usuário já é criado no banco de dados
 # de teste antes do teste ser executado.
-def test_update_user(client, user):
+# def test_update_user(client, user):
+#     response = client.put(
+#         '/users/1',
+#         json={
+#             'username': 'bob',
+#             'email': 'bob@example.com',
+#             'password': 'mynewpassword',
+#         },
+#     )
+#     assert response.status_code == HTTPStatus.OK
+#     assert response.json() == {
+#         'username': 'bob',
+#         'email': 'bob@example.com',
+#         'id': 1,
+#     }
+def test_update_user(client, user, token):
     response = client.put(
-        '/users/1',
+        f'/users/{user.id}',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'bob',
             'email': 'bob@example.com',
@@ -139,11 +156,19 @@ def test_update_user(client, user):
     assert response.json() == {
         'username': 'bob',
         'email': 'bob@example.com',
-        'id': 1,
+        'id': user.id,
     }
 
 
-def test_update_integrity_error(client, user):
+def test_update_user_error_user_not_found(client, token):
+    response = client.put(
+        '/users/2', headers={'Authorization': f'Bearer {token}'}
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() == {'detail': 'Not enough permissions'}
+
+
+def test_update_integrity_error(client, user, token):
     # Criando um registro para "fausto"
     client.post(
         '/users',
@@ -155,8 +180,10 @@ def test_update_integrity_error(client, user):
     )
 
     # Alterando o user.username das fixture para fausto
+    # Alterando o user das fixture para fausto
     response_update = client.put(
         f'/users/{user.id}',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'fausto',
             'email': 'bob@example.com',
@@ -172,15 +199,75 @@ def test_update_integrity_error(client, user):
 
 # Quando usamos a fixture user, um usuário já é criado no banco de dados
 # de teste antes do teste ser executado.
-def test_delete_user(client, user):
-    response = client.delete('/users/1')
-
+def test_delete_user(client, user, token):
+    response = client.delete(
+        f'/users/{user.id}',
+        headers={'Authorization': f'Bearer {token}'},
+    )
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': _('User deleted')}
 
 
-def test_delete_user_error_not_found(client):
-    response = client.delete('/users/2')
+# def test_delete_user(client, user):
+#     response = client.delete('/users/1')
 
-    assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {'detail': _('User not found')}
+#     assert response.status_code == HTTPStatus.OK
+#     assert response.json() == {'message': _('User deleted')}
+
+
+# def test_delete_user_error_not_found(client):
+#     response = client.delete('/users/2')
+
+#     assert response.status_code == HTTPStatus.NOT_FOUND
+#     assert response.json() == {'detail': _('User not found')}
+
+
+def test_delete_user_error_user_not_found(client, token):
+    response = client.delete(
+        '/users/2', headers={'Authorization': f'Bearer {token}'}
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() == {'detail': 'Not enough permissions'}
+
+
+def test_get_token(client, user):
+    """
+    Monkey patching é uma técnica em que modificamos ou estendemos o código em
+    tempo de execução. Neste caso, O atributo clean_password foi criado na
+    @pytest.fixture no objeto user para armazenar a senha em texto puro.
+    """
+    response = client.post(
+        '/token',
+        data={'username': user.email, 'password': user.clean_password},
+    )
+    token = response.json()
+
+    assert response.status_code == HTTPStatus.OK
+    assert 'access_token' in token
+    assert 'token_type' in token
+
+
+def test_get_current_user_not_found__exercicio(client):
+    data = {'no-email': 'test'}
+    token = create_access_token(data)
+
+    response = client.delete(
+        '/users/1',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_get_current_user_does_not_exists__exercicio(client):
+    data = {'sub': 'test@test'}
+    token = create_access_token(data)
+
+    response = client.delete(
+        '/users/1',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}

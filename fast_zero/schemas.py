@@ -56,3 +56,19 @@ class UserList(BaseModel):
             }
         }
     )
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    model_config = ConfigDict(
+        from_attributes=True,
+        schema_extra={
+            'example': {
+                'access_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+                'eyJzdWIiOiJ0ZXN0ZUB0ZXN0LmNvbSIsImV4cCI6MTY5MDI1ODE1M30.'
+                'Nx0P_ornVwJBH_LLLVrlJoh6RmJeXR-Nr7YJ_mlGY04',
+                'token_type': 'bearer',
+            }
+        },
+    )

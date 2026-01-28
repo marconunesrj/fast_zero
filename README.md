@@ -280,5 +280,18 @@ Para compliar as Mensagens execute no terminal na ordem abaixo, dentro do ambien
 
 Assim o arquivo messages.mo será gerado ou atualizado.
 
+# JWT
+
+## JSON Web Token Claims
+- https://www.iana.org/assignments/jwt/jwt.xhtml
+
+## Gerando tokens JWT
+Para gerar tokens JWT, precisamos de uma nova biblioteca que ainda não temos, a pyjwt. Que será usada para gerar nossos tokens seguindo as especificações necessárias na RFC:
+
+$ Execução no terminal!
+
+- poetry add pyjwt
+- poetry add tzdata
+- poetry add "pwdlib[argon2]"
 
 
