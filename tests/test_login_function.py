@@ -4,8 +4,8 @@ from types import SimpleNamespace
 import pytest
 from fastapi import HTTPException
 
-from fast_zero.app import login_for_access_token
 from fast_zero.models import User
+from fast_zero.routers.auth import login_for_access_token
 from fast_zero.security import get_password_hash
 
 # Arquivo feito fora de padrão pelo Copilot
