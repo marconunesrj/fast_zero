@@ -26,7 +26,7 @@ _ = init_gettext()
 description_current_user = _('User ID')
 description_skip = _('Number of items to skip')
 description_limit = _('Max number of items to return')
-Session = Annotated[Session, Depends(get_session)]
+SessionLocal = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 CurrentId = Annotated[
     int, Path(..., description=description_current_user, example=1)
@@ -70,7 +70,7 @@ router = APIRouter(prefix='/users', tags=['users'])
         }
     },
 )
-def create_user(user: UserSchema, session: Session):
+def create_user(user: UserSchema, session: SessionLocal):
     """_('Creates a new user and returns the public user representation.')"""
     db_user = session.scalar(
         select(User).where(
@@ -111,7 +111,9 @@ def create_user(user: UserSchema, session: Session):
     description=_('Returns a list of users (paginated).'),
     # tags=['Users'],
 )
-def read_users(session: Session, filter_users: Annotated[FilterPage, Query()]):
+def read_users(
+    session: SessionLocal, filter_users: Annotated[FilterPage, Query()]
+):
     """_('Returns a list of users (paginated).')"""
     users = session.scalars(
         select(User).offset(filter_users.offset).limit(filter_users.limit)
@@ -137,7 +139,7 @@ def read_users(session: Session, filter_users: Annotated[FilterPage, Query()]):
     },
 )
 def read_user(
-    session: Session,
+    session: SessionLocal,
     user_id: CurrentId,
 ):
     """_('Return a single user by ID.')"""
@@ -177,7 +179,7 @@ def read_user(
     },
 )
 def update_user(
-    session: Session,
+    session: SessionLocal,
     current_user: CurrentUser,
     user_id: CurrentId,
     user: UserSchema = None,
@@ -227,7 +229,7 @@ def update_user(
     },
 )
 def delete_user(
-    session: Session,
+    session: SessionLocal,
     current_user: CurrentUser,
     user_id: CurrentId,
 ):
