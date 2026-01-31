@@ -339,3 +339,19 @@ pythonpath = "."
 addopts = '-p no:warnings'
 asyncio_default_fixture_loop_scope = 'function'
 
+# Factory-Boy
+O factory-boy é uma biblioteca que nos permite criar objetos de modelo de teste de forma rápida e fácil. Com ele, podemos criar uma "fábrica"1 de usuários que produzirá novos objetos de usuário sempre que precisarmos. Isso nos permite criar múltiplos usuários de teste com facilidade, o que é perfeito para nosso cenário atual.
+
+Para começar, precisamos instalar o factory-boy em nosso ambiente de desenvolvimento:
+
+$ Execução no terminal!
+
+- poetry add --group dev factory-boy
+
+# freezegun
+freezeguné uma biblioteca Python que nos permite "congelar" o tempo em um ponto específico ou avançá-lo conforme necessário durante os testes. Isso é especialmente útil para testar funcionalidades sensíveis ao tempo, como a expiração de tokens, sem ter que esperar em tempo real.
+
+Primeiro, precisamos instalar a biblioteca:
+
+- poetry add --group dev freezegun
+
