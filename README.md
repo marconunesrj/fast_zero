@@ -243,6 +243,7 @@ alembic init migrations
 
 $ Execução no terminal!
 
+alembic revision --autogenerate -m "<comentário sobre o que será criado devido as alterações realizadas no arquivo models.py>"
 alembic revision --autogenerate -m "create users table"
 
 ## Comandos Alembic

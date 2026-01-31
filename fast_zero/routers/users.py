@@ -112,7 +112,14 @@ async def create_user(user: UserSchema, session: SessionLocal):
     # tags=['Users'],
 )
 async def read_users(
-    session: SessionLocal, filter_users: Annotated[FilterPage, Query()]
+    session: SessionLocal,
+    # # O parâmetro (current_user: CurrentUser) faz com que seja
+    # # requerida a autenticação
+    # current_user: CurrentUser,
+    filter_users: Annotated[
+        FilterPage,
+        Query(),
+    ],
 ):
     """_('Returns a list of users (paginated).')"""
     query = await session.scalars(
@@ -182,6 +189,8 @@ async def read_user(
 )
 async def update_user(
     session: SessionLocal,
+    # O parâmetro (current_user: CurrentUser) faz com que seja
+    # requerida a autenticação
     current_user: CurrentUser,
     user_id: CurrentId,
     user: UserSchema = None,
@@ -232,6 +241,8 @@ async def update_user(
 )
 async def delete_user(
     session: SessionLocal,
+    # O parâmetro (current_user: CurrentUser) faz com que seja
+    # requerida a autenticação
     current_user: CurrentUser,
     user_id: CurrentId,
 ):
